@@ -6,28 +6,30 @@ library(ggplot2)
 library(zoo)
 library(rHighcharts)
 library(png)
-
+library(xts)
+library(plotly)
 # Define server logic for the display of data
 shinyServer(function(input, output) {
 
-  path <- c("~/R/shiny-examples/006-tabsets/data")
-  #d1 <- read.csv(paste(path,"/Day_7_1.csv",sep=""))
-  #d2 <- read.csv(paste(path,"/Day_7_2.csv",sep=""))
-  #d3 <- read.csv(paste(path,"/Day_7_3.csv",sep=""))
-  #rbind(d1,d2,d3)
+  path <- c("~/R/Sensebox/data")
   df <- read.csv(paste(path,"/Data.csv",sep = ""))
-  #write.csv(x = df, file = paste(path,"/Data.csv",sep = ""))
-
+  mys <- df[df$Humidity>80 & df$Temperature>4 & df$Temperature<8,]
+  ser <- df[df$Soundvalue<100 & df$Windspeed<1,]
+  dra <- df[df$Windspeed>0.2 & df$Lux<1000,]
+  
+  #Read the locations where the data was recorded and display on the map
   output$map <- renderLeaflet({
-    map <- leaflet(width = 500, height = 200) %>%
-    addTiles() %>%
-    #map$setView(c(51.967,7.663), zoom = 12)
-    addMarkers(lng = 7.599008, lat = 51.947237,popup = "Aasee")
-    #map$set(dom = 'map', width = 500, height = 200)
+    
+    lng = df$Longitude
+    lat = df$Latitude
+    map <- leaflet(width = 400, height = 1500) %>% 
+           setView(7.575488,51.97512, zoom = 16) %>%
+           addTiles() %>%
+           addMarkers(lng = lng, lat = lat,popup = "Gievenbeck")
     map
   })
 
-  # Generate image corresponding to a scene
+  # Generate image corresponding to a scene in the locations marked on the map
   output$pic <- renderImage({
     if (input$time == "Morning" && input$scene == "Mysterious")
     {
@@ -117,21 +119,41 @@ shinyServer(function(input, output) {
     
   },deleteFile = FALSE)
   
-  # Generate a summary of the data
+  # Generate a summary of the weather conditions that contribute to the scene
   
-  output$Bar <- renderPlot({
-    bardata = data.frame(Conditions =
-                           factor(c("Fog", "Darkness", "Twilight"),
-                           levels = c("Fog", "Darkness", "Twilight")),
-                           Contribution = c(mean(df$Humidity/100), 
-                                            mean(df$Windspeed), 
-                                            mean(df$Distance/10, na.rm = TRUE)))
+  output$Conditions <- renderImage({
+    
+    if(input$scene == "Mysterious")
+      return(list(
+        src = "www/mys_contrib.png",
+        contentType = "image/png",
+        alt = "contrib1"
+      ))
+    #if(input$scene == "Scenic")
+    if(input$scene == "Serene")
+      return(list(
+        src = "www/ser_contrib.png",
+        contentType = "image/png",
+        alt = "contrib2"
+      ))
+    if(input$scene == "Dramatic")
+      return(list(
+        src = "www/drm_contrib.png",
+        contentType = "image/png",
+        alt = "contrib3"
+      ))
+#     bardata = data.frame(Conditions =
+#                            factor(c("Fog", "Darkness", "Twilight"),
+#                            levels = c("Fog", "Darkness", "Twilight")),
+#                            Contribution = c(mean(df$Humidity/100), 
+#                                             mean(df$Windspeed), 
+#                                             mean(df$Distance/10, na.rm = TRUE)))
 
-    g1 <- ggplot(bardata,aes(Conditions,Contribution)) + 
-          geom_bar(stat = "identity") + xlab("Conditions") + 
-          ylab("Contribution")
-    g1
-  })
+#     g1 <- ggplot(bardata,aes(Conditions,Contribution)) + 
+#           geom_bar(stat = "identity") + xlab("Conditions") + 
+#           ylab("Contribution")
+#     g1
+  },deleteFile = FALSE)
   
   output$timeseries <- renderDygraph({
       time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
@@ -150,8 +172,13 @@ shinyServer(function(input, output) {
   })
   
   # Generate an HTML table view of the data
-  output$table <- renderTable({
-    data.frame(x=na.omit(df[1:10,3:8]))
+  output$table <- renderDataTable({
+    if(input$scene == "Mysterious")
+      mys
+    else if(input$scene == "Serene")
+      ser
+    else if(input$scene == "Dramatic")
+      dra
   })
   
 

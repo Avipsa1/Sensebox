@@ -1,23 +1,25 @@
-library(shiny)
-library(leaflet)
-library(dygraphs)
-library(rCharts)
-library(ggplot2)
-library(rHighcharts)
+require(shiny)
+require(leaflet)
+require(dygraphs)
+require(rCharts)
+require(ggplot2)
+require(rHighcharts)
+require(leaflet)
 
 # Define UI for random distribution application
 shinyUI(fluidPage(
 
   # Application title
-  titlePanel("Scene Selection"),
+  titlePanel(img(src = "logo.png")),
 
     sidebarLayout(
     sidebarPanel(
-      radioButtons("scene", "Select a Scene:",
+        radioButtons("scene", "Scene Selection:",
                    c("Mysterious",
                      "Serene",
-                     "Dramatic",
-                     "Scenic")),
+                     "Dramatic"
+                     #"Scenic"
+                     )),
       br(),
 
       selectInput("time",
@@ -29,21 +31,23 @@ shinyUI(fluidPage(
 
     # Show a tabset that includes a plot, summary, and table view
     # of the generated distribution
-    mainPanel(
+    mainPanel(fluidPage(
       tabsetPanel(type = "tabs",
-        tabPanel("OpenPICMap", leafletOutput("map"),
+        tabPanel("Picture Map", leafletOutput("map"),
                  br(),
                  tags$div("_____________________________________________________________________________________________________________________"),
                  br(),
-                 tags$h6("Sample Photograph"),
-                 imageOutput("pic",height = "200px", width = "400px")),
-                 #img(src = 'Mysterious.jpg', height = 200, width = 400)),
-        tabPanel("Qualifying Conditions",plotOutput("Bar")),
+                 tags$h2("Sample Photograph"),
+                 imageOutput("pic",height = "100px", width = "100px")
+                 ),
+                 
+        tabPanel("Qualifying Conditions",imageOutput("Conditions")),
+        
         tabPanel("Actual Atmospheric Conditions", dygraphOutput("timeseries")),
                  br(),
-                 #plotOutput("Bar")),
-        tabPanel("DataSets", tableOutput("table"))
+        
+        tabPanel("DataSets", dataTableOutput("table"))
       )
-    )
+    ))
   )
 ))
