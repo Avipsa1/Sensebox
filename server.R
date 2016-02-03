@@ -209,10 +209,19 @@ shinyServer(function(input, output) {
         value <- mys[1:length(time_index),]
         plotdata <- xts(value, order.by = time_index)
         
-        annoText = "Fog + Dark"
-        from_time = "2016-01-23 10:00"
-        to_time = "2016-01-23 11:00"
+        annoText = c("Fog + Dark")
+        from_time = as.POSIXct("2016-01-23 10:00")
+        to_time = as.POSIXct("2016-01-23 11:00")
         scale_col = "#FFE7E6"
+        
+        d <- dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
+          dyAxis("y", valueRange = c(0,1)) %>% 
+          dyRangeSelector() %>%
+          dyLegend(labelsDiv = "legendDivID") %>%
+          dyAnnotation("2016-01-23 10:00", text = "Fog + Dark", width = 100, height = 20)%>% 
+          dyShading(from = from_time, 
+                    to = to_time, 
+                    color = scale_col) %>% dyLegend(width = 400)
         
       }
       
@@ -236,23 +245,25 @@ shinyServer(function(input, output) {
         value <- dra[1:length(time_index),]
         plotdata <- xts(value, order.by = time_index)
         
-        annoText <- "Windy+Cloudy"
+        annoText <- c("Windy+Cloudy")
         
-        from_time = "2016-01-23 9:00"
-        to_time = "2016-01-23 10:00"
+        from_time = as.POSIXct("2016-01-23 9:00")
+        to_time = as.POSIXct("2016-01-23 10:00")
         scale_col = "#EFE7E6"
+        
+        d <- dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
+          dyAxis("y", valueRange = c(0,1)) %>% 
+          dyRangeSelector() %>%
+          dyLegend(labelsDiv = "legendDivID") %>%
+          dyAnnotation("2016-01-23 9:00", text = "Cloudy + Windy", width = 100, height = 20)%>% 
+          dyShading(from = from_time, 
+                    to = to_time, 
+                    color = scale_col) %>% dyLegend(width = 400)
         
       }
       
-      
-      dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
-        dyAxis("y", valueRange = c(0,1)) %>% 
-        dyRangeSelector() %>%
-        dyLegend(labelsDiv = "legendDivID") %>%
-        dyAnnotation("2016-01-23 10:00", text = annoText, width = 100, height = 20)%>% 
-        dyShading(from = from_time, 
-                  to = to_time, 
-                  color = scale_col) %>% dyLegend(width = 400)
+      d
+     
   })
   
   # Generate an HTML table view of the data
