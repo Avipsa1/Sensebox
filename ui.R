@@ -5,6 +5,7 @@ require(rCharts)
 require(ggplot2)
 require(rHighcharts)
 require(leaflet)
+library(shinydashboard)
 
 # Define UI for random distribution application
 shinyUI(fluidPage(
@@ -43,7 +44,12 @@ shinyUI(fluidPage(
                  
         tabPanel("Qualifying Conditions",imageOutput("Conditions")),
         
-        tabPanel("Actual Atmospheric Conditions", dygraphOutput("timeseries")),
+        tabPanel("Actual Atmospheric Conditions", 
+                fluidRow(
+                  box(dygraphOutput("timeseries"),width = 9),
+                  box(textOutput("legendDivID"), title = "Legend", collapsible = TRUE, width=3)
+                )
+        ),
                  br(),
         
         tabPanel("DataSets", dataTableOutput("table"))
