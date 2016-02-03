@@ -12,12 +12,13 @@ shinyUI(fluidPage(
 
   # Application title
   titlePanel(img(src = "logo.png")),
+  title = "OpenPICMap",
 
     sidebarLayout(
     sidebarPanel(
         radioButtons("scene", "Scene Selection:",
                    c("Mysterious",
-                     "Serene",
+                     #"Serene",
                      "Dramatic"
                      #"Scenic"
                      )),
