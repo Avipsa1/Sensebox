@@ -185,14 +185,18 @@ shinyServer(function(input, output) {
   },deleteFile = FALSE)
   
   output$timeseries <- renderDygraph({
-      time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
-                        to = as.POSIXct("2016-01-23 18:00"), 
-                        by = "15 min")
+    
+    
       if(input$scene == "Mysterious")
       {
+        timestep <- round((12*60)/nrow(mys),2)
+        time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
+                          to = as.POSIXct("2016-01-23 18:00"), 
+                          by = paste(timestep,"min"))
+        
         mys$Humidity <- mys$Humidity/100
         mys$Temperature <- mys$Temperature/10
-        mys$Lux <- mys$Lux/1000
+        mys$Lux <- mys$Lux/100
         mys$Longitude <- NULL
         mys$Latitude <- NULL
         mys$Soundvalue <- NULL
@@ -202,20 +206,25 @@ shinyServer(function(input, output) {
         mys$Windspeed <- NULL
         
         colnames(mys) <- c("Humidity","Temperature","Luminosity")
-        value <- mys[1:49,]
+        value <- mys[1:length(time_index),]
         plotdata <- xts(value, order.by = time_index)
         
         annoText = "Fog + Dark"
         from_time = "2016-01-23 10:00"
         to_time = "2016-01-23 11:00"
+        scale_col = "#FFE7E6"
         
       }
       
       if(input$scene == "Dramatic")
       {
+        timestep <- round((12*60)/nrow(dra),2)
+        time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
+                          to = as.POSIXct("2016-01-23 18:00"), 
+                          by = paste(timestep,"min"))
         dra$Humidity <- dra$Humidity/100
         dra$Temperature <- dra$Temperature/10
-        dra$Lux <- dra$Lux/1000
+        dra$Lux <- dra$Lux/100
         dra$Longitude <- NULL
         dra$Latitude <- NULL
         dra$Soundvalue <- NULL
@@ -224,25 +233,26 @@ shinyServer(function(input, output) {
         dra$Time <- NULL
         
         colnames(dra) <- c("Humidity","Temperature","WindSpeed","Luminosity")
-        value <- dra[1:49,]
+        value <- dra[1:length(time_index),]
         plotdata <- xts(value, order.by = time_index)
         
         annoText <- "Windy+Cloudy"
         
         from_time = "2016-01-23 9:00"
         to_time = "2016-01-23 10:00"
+        scale_col = "#EFE7E6"
         
       }
       
       
       dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
-        dyAxis("y", valueRange = c(0,5)) %>% 
+        dyAxis("y", valueRange = c(0,1)) %>% 
         dyRangeSelector() %>%
         dyLegend(labelsDiv = "legendDivID") %>%
         dyAnnotation("2016-01-23 10:00", text = annoText, width = 100, height = 20)%>% 
         dyShading(from = from_time, 
                   to = to_time, 
-                  color = "#FFE6E6") %>% dyLegend(width = 400)
+                  color = scale_col) %>% dyLegend(width = 400)
   })
   
   # Generate an HTML table view of the data

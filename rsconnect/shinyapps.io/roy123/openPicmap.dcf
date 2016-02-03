@@ -1,8 +1,8 @@
 name: openPicmap
 account: roy123
 server: shinyapps.io
-bundleId: 365097
+bundleId: 365133
 url: https://roy123.shinyapps.io/openPicmap/
-when: 1454498486.3611
+when: 1454501738.9754
 asMultiple: FALSE
 asStatic: FALSE
