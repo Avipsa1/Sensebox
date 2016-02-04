@@ -189,10 +189,11 @@ shinyServer(function(input, output) {
     
       if(input$scene == "Mysterious")
       {
-        timestep <- round((12*60)/nrow(mys),2)
+        timestep <- paste(round((12*60)/nrow(mys),2),"min")
+        
         time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
                           to = as.POSIXct("2016-01-23 18:00"), 
-                          by = paste(timestep,"min"))
+                          by = "hour")
         
         mys$Humidity <- mys$Humidity/100
         mys$Temperature <- mys$Temperature/10
@@ -207,21 +208,30 @@ shinyServer(function(input, output) {
         
         colnames(mys) <- c("Humidity","Temperature","Luminosity")
         value <- mys[1:length(time_index),]
-        plotdata <- xts(value, order.by = time_index)
+#         plotH <- xts(value$Humidity, order.by = time_index)
+#         plotT <- xts(value$Temperature, order.by = time_index)
+#         plotL <- xts(value$Luminosity, order.by = time_index)
+          plotdata <- xts(value, order.by = time_index)
         
-        annoText = c("Fog + Dark")
-        from_time = as.POSIXct("2016-01-23 10:00")
-        to_time = as.POSIXct("2016-01-23 11:00")
-        scale_col = "#FFE7E6"
+        #annoText = c("Fog + Dark")
+        #from_time = as.POSIXct("2016-1-23 10:00")
+        #to_time = as.POSIXct("2016-1-23 11:00")
+        #scale_col = "#FFE7E6"
         
         d <- dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
           dyAxis("y", valueRange = c(0,1)) %>% 
           dyRangeSelector() %>%
           dyLegend(labelsDiv = "legendDivID") %>%
-          dyAnnotation("2016-01-23 10:00", text = "Fog + Dark", width = 100, height = 20)%>% 
-          dyShading(from = from_time, 
-                    to = to_time, 
-                    color = scale_col) %>% dyLegend(width = 400)
+          #dySeries("Humidity", stepPlot = TRUE, color = "blue") %>%
+          #dySeries("Temperature", drawPoints = TRUE, color = "red") %>%
+          #dySeries("Temperature", color = "purple") %>%
+          dyAnnotation("2016-01-23 07:00", text = "Fog + Dark", width = 100, height = 20)%>% 
+          dyShading(from = as.POSIXct("2016-1-23 07:00:00"), 
+                    to = as.POSIXct("2016-1-23 08:00:00"), 
+                    color = "#FFE7E6") %>% 
+          dyShading(from = as.POSIXct("2016-1-23 16:00:00"), 
+                    to = as.POSIXct("2016-1-23 17:00:00"), 
+                    color = "#FFE7E6")
         
       }
       
@@ -230,7 +240,7 @@ shinyServer(function(input, output) {
         timestep <- round((12*60)/nrow(dra),2)
         time_index <- seq(from = as.POSIXct("2016-01-23 06:00"), 
                           to = as.POSIXct("2016-01-23 18:00"), 
-                          by = paste(timestep,"min"))
+                          by = "hour")
         dra$Humidity <- dra$Humidity/100
         dra$Temperature <- dra$Temperature/10
         dra$Lux <- dra$Lux/100
@@ -251,11 +261,11 @@ shinyServer(function(input, output) {
         to_time = as.POSIXct("2016-01-23 10:00")
         scale_col = "#EFE7E6"
         
-        d <- dygraph(plotdata, main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
+        d <- dygraph(na.omit(plotdata), main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
           dyAxis("y", valueRange = c(0,1)) %>% 
           dyRangeSelector() %>%
           dyLegend(labelsDiv = "legendDivID") %>%
-          dyAnnotation("2016-01-23 9:00", text = "Cloudy + Windy", width = 100, height = 20)%>% 
+          dyAnnotation("2016-01-23 9:00", text = "Cloudy + Windy", width = 100, height = 50)%>% 
           dyShading(from = from_time, 
                     to = to_time, 
                     color = scale_col) %>% dyLegend(width = 400)
