@@ -34,7 +34,8 @@ shinyServer(function(input, output) {
     map <- leaflet(width = 400, height = 1500) %>% 
            setView(7.575488,51.97512, zoom = 12) %>%
            addTiles() %>%
-           addMarkers(lng = lng, lat = lat,icon = leafIcons)
+           #addProviderTiles("http://{s}.tile.openweathermap.org/{z}/{x}/{y}.png") %>%
+           addMarkers(lng = lng, lat = lat,icon = leafIcons, popup = c("Aasee","Gievenbeck")) 
     }
     else if (input$scene == "Serene")
     {
@@ -64,7 +65,7 @@ shinyServer(function(input, output) {
       map <- leaflet(width = 400, height = 1500) %>% 
         setView(7.575488,51.97512, zoom = 12) %>%
         addTiles() %>%
-        addMarkers(lng = lng, lat = lat,icon = leafIcons)
+        addMarkers(lng = lng, lat = lat,icon = leafIcons,popup = c("Aasee","Gievenbeck"))
     }
     map
   })
@@ -257,15 +258,15 @@ shinyServer(function(input, output) {
         
         annoText <- c("Windy+Cloudy")
         
-        from_time = as.POSIXct("2016-01-23 9:00")
-        to_time = as.POSIXct("2016-01-23 10:00")
+        from_time = as.POSIXct("2016-01-23 13:00")
+        to_time = as.POSIXct("2016-01-23 14:00")
         scale_col = "#EFE7E6"
         
         d <- dygraph(na.omit(plotdata), main = "Variation of Atmospheric Conditions", ylab = "Scaled values") %>% 
           dyAxis("y", valueRange = c(0,1)) %>% 
           dyRangeSelector() %>%
           dyLegend(labelsDiv = "legendDivID") %>%
-          dyAnnotation("2016-01-23 9:00", text = "Cloudy + Windy", width = 100, height = 50)%>% 
+          dyAnnotation("2016-01-23 13:00", text = "Cloudy + Windy", width = 100, height = 50)%>% 
           dyShading(from = from_time, 
                     to = to_time, 
                     color = scale_col) %>% dyLegend(width = 400)
