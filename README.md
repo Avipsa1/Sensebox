@@ -1,9 +1,12 @@
-This example demonstrates the `tabsetPanel` and `tabPanel` widgets.
+# OpenPICMap:Sensebox
 
-Notice that outputs that are not visible are not re-evaluated until they become visible. Try this: 
+An application that reads data from Arduino as input and provides a user-friendly
+interface to visualise the sensor data using R - Shiny.
 
-1. Scroll to the bottom of `server.R`
-2. Change the number of observations, and observe that only `output$plot` is evaluated.
-3. Click the Summary tab, and observe that `output$summary` is evaluated.
-4. Change the number of observations again, and observe that now only `output$summary` is evaluated.
+The data is read as a csv file from a central location into R. Further analysis is
+done in `R` , a statistical tool ,based on concepts related to various scene selections and factors that contribute to clicking a perfect picture based on weather conditions detected by the `Sensebox`. 
+
+1. Install `RStudio`.
+2. Display results using `R shiny`.
+3. Read data from sensebox through `Arduino`.
 
